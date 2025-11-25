@@ -1,5 +1,5 @@
 # googlesearch
-googlesearch is a Python library for searching Google, easily. googlesearch uses requests and BeautifulSoup4 to scrape Google. 
+googlesearch is a Python library for searching Google, easily. googlesearch uses the google-api-python-client.
 
 ## Installation
 To install, run the following command:
@@ -8,72 +8,66 @@ python3 -m pip install googlesearch-python
 ```
 
 ## Usage
-To get results for a search term, simply use the search function in googlesearch. For example, to get results for "Google" in Google, just run the following program:
+To get results for a search term, you must first provide your credentials.
+
+You will need an API key and a Custom Search Engine ID.
+- To get an API key, visit: https://developers.google.com/custom-search/v1/overview#api_key
+- To get a Custom Search Engine ID, visit: https://programmablesearchengine.google.com/controlpanel/all?hl=de
+
+Set your credentials using the `set_api_key` and `set_cse_id` functions. These only need to be called once per session.
+
 ```python
-from googlesearch import search
-search("Google")
+from googlesearch import search, set_api_key, set_cse_id
+
+# Set your credentials
+set_api_key("YOUR_API_KEY")
+set_cse_id("YOUR_CSE_ID")
+
+# Now you can perform searches
+results = search("Google")
 ```
 
+Alternatively, you can place your API key in a file named `apikey` in the working directory, and it will be loaded automatically. You will still need to set the CSE ID.
+
 ## Additional options
-googlesearch supports a few additional options. By default, googlesearch returns 10 results. This can be changed. To get a 100 results on Google for example, run the following program.
+googlesearch supports a few additional options. By default, googlesearch returns 10 results. This can be changed. To get 100 results on Google for example, run the following program.
 ```python
-from googlesearch import search
+from googlesearch import search, set_api_key, set_cse_id
+
+set_api_key("YOUR_API_KEY")
+set_cse_id("YOUR_CSE_ID")
+
 search("Google", num_results=100)
-```
-If you want to have unique links in your search result, you can use the `unique` option as in the following program.
-```python
-from googlesearch import search
-search("Google", num_results=100, unique=True)
 ```
 In addition, you can change the language google searches in. For example, to get results in French run the following program:
 ```python
-from googlesearch import search
+from googlesearch import search, set_api_key, set_cse_id
+
+set_api_key("YOUR_API_KEY")
+set_cse_id("YOUR_CSE_ID")
+
 search("Google", lang="fr")
-```
-You can also specify the region ([Country Codes](https://developers.google.com/custom-search/docs/json_api_reference#countryCodes)) for your search results. For example, to get results specifically from the US run the following program:
-```python
-from googlesearch import search
-search("Google", region="us")
-```
-If you want to turn off the safe search function (this function is on by default), you can do this:
-```python
-from googlesearch import search
-search("Google", safe=None)
 ```
 To extract more information, such as the description or the result URL, use an advanced search:
 ```python
-from googlesearch import search
+from googlesearch import search, set_api_key, set_cse_id
+
+set_api_key("YOUR_API_KEY")
+set_cse_id("YOUR_CSE_ID")
+
 search("Google", advanced=True)
-# Returns a list of SearchResult
+# Returns a generator of SearchResult objects
 # Properties:
 # - title
 # - url
 # - description
 ```
-If requesting more than 100 results, googlesearch will send multiple requests to go through the pages. To increase the time between these requests, use `sleep_interval`:
+If requesting more than 10 results, googlesearch will send multiple requests to go through the pages. To increase the time between these requests, use `sleep_interval`:
 ```python
-from googlesearch import search
-search("Google", sleep_interval=5, num_results=200)
-```
+from googlesearch import search, set_api_key, set_cse_id
 
-```
-If requesting more than 10 results, but want to manage the batching yourself? 
-Use `start_num` to specify the start number of the results you want to get:
-```python
-from googlesearch import search
-search("Google", sleep_interval=5, num_results=200, start_result=10)
-```
+set_api_key("YOUR_API_KEY")
+set_cse_id("YOUR_CSE_ID")
 
-If you are using a HTTP Rotating Proxy which requires you to install their CA Certificate, you can simply add `ssl_verify=False` in the `search()` method to avoid SSL Verification.
-```python
-from googlesearch import search
-
-
-proxy = 'http://username:password@proxy.host.com:8080/'
-# or for socks5
-# proxy = 'socks5://username:password@proxy.host.com:1080/'
-
-j = search("proxy test", num_results=100, lang="en", proxy=proxy, ssl_verify=False)
-for i in j:
-    print(i)
+search("Google", sleep_interval=5, num_results=20)
 ```
